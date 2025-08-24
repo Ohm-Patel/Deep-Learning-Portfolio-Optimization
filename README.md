@@ -3,12 +3,18 @@
 LSTM-powered portfolio optimization with Monte Carlo simulations for the **Dow 30**.
 
 Pick stocks, optionally set custom weights, and get:
-- Expected **60‑day growth** curve
+- Expected **75‑day growth** curve
 - **Capital allocation** by ticker
 - Summary stats: expected return, volatility, and Sharpe
 
 > UI details: responsive layout for desktop → mobile, pie **stroke matches card border** (`#374151`), and pie tooltip is formatted like  
 > `stock_name: percent_allocated% ($capital_allocated)`.
+
+---
+
+## 📸 DEMO
+
+https://www.youtube.com/watch?v=MhX7eyEtutg
 
 ---
 
@@ -19,7 +25,7 @@ Pick stocks, optionally set custom weights, and get:
 - LSTM (60‑day lookback with RobustScaler) → Monte Carlo path simulation
 - Auto‑optimize weights for Sharpe, or respect user-provided weights
 - Charts
-  - **Growth** (line chart, 60 days)
+  - **Growth** (line chart, 75 days)
   - **Capital Allocation** (pie with themed border + formatted tooltip)
 - Clean dark UI, keyboard-friendly inputs, and clear error messages
 
@@ -46,7 +52,7 @@ Pick stocks, optionally set custom weights, and get:
 
 ### 1) Clone
 ```bash
-git clone <your-repo-url> portfolio-optimizer
+git clone <repo-url> portfolio-optimizer
 cd portfolio-optimizer
 ```
 
@@ -55,7 +61,6 @@ cd portfolio-optimizer
 cd backend
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -71,7 +76,7 @@ echo "VITE_API_BASE_URL=http://localhost:8000" > .env.local
 npm run dev
 ```
 
-Open the printed localhost URL (Vite defaults to `http://localhost:5173`).
+Open the printed localhost URL.
 
 > Ensure your `index.html` includes:
 ```html
@@ -107,7 +112,7 @@ Open the printed localhost URL (Vite defaults to `http://localhost:5173`).
 }
 ```
 
-**cURL**
+**Curl**
 ```bash
 curl -X POST http://localhost:8000/api/portfolio/optimize \
   -H "Content-Type: application/json" \
@@ -118,7 +123,7 @@ curl -X POST http://localhost:8000/api/portfolio/optimize \
 
 ## ⚙️ Configuration
 
-- **Frontend API base**: `VITE_API_BASE_URL` (defaults to `http://localhost:8000` if hardcoded in the component).
+- **Frontend API base**: `VITE_API_BASE_URL`
 - **Model/scaler**: Persist and load the scaler that matches your training pipeline. Feature order, lookback window, and preprocessing must match at inference.
 
 ---
@@ -130,18 +135,27 @@ curl -X POST http://localhost:8000/api/portfolio/optimize \
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
+│   │   ├── dependencies.py
 │   │   ├── routes/portfolio.py
-│   │   ├── services/optimizer.py
-│   │   └── models/
-│   │       ├── loader.py
-│   │       └── weights/*.h5
-│   └── requirements.txt
+│   │   ├── utils/serialization.py
+│   │   ├── artifacts/model.h5
+│   │   └── services/
+│   │       ├── optimizer.py
+│   │       ├── simulation.py
 ├── frontend/
 │   ├── src/
 │   │   ├── components/PortfolioOptimizer.jsx
 │   │   └── main.jsx
+│   │   └── index.jsx
+│   │   └── app.jsx
+│   │   └── index.css
+│   │   └── app.css
+│   │   └── PortfolioOptimizer.css
 │   ├── index.html
 │   └── package.json
+├── training/
+│   ├── data_utils.py
+│   ├── train_model.py
 └── README.md
 ```
 
@@ -162,20 +176,6 @@ curl -X POST http://localhost:8000/api/portfolio/optimize \
 - Multi-objective optimization (drawdown-aware)
 - Training pipeline scripts + model registry
 - CI (lint, type-check, tests) and Dockerization
-
----
-
-## 📸 Screenshots
-
-Add a screenshot under `docs/screenshot.png` and reference it here:
-
-![App screenshot](docs/screenshot.png)
-
----
-
-## 📝 License
-
-MIT — see `LICENSE` for details.
 
 ---
 
